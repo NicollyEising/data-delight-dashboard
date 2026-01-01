@@ -1,16 +1,21 @@
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { getTasksByPriority } from '@/data/tasks';
+import { Task, getTasksByPriority } from '@/data/tasks';
 
 const COLORS = [
   'hsl(0, 72%, 51%)',    // Urgente - vermelho
   'hsl(45, 90%, 55%)',   // Alta - amarelo
   'hsl(215, 70%, 45%)',  // Média - azul
   'hsl(160, 60%, 45%)',  // Baixa - verde
+  'hsl(210, 15%, 60%)',  // Não definida - cinza
 ];
 
-export function PriorityChart() {
-  const data = getTasksByPriority();
+interface PriorityChartProps {
+  tasks: Task[];
+}
+
+export function PriorityChart({ tasks }: PriorityChartProps) {
+  const data = getTasksByPriority(tasks);
 
   return (
     <Card className="shadow-sm">

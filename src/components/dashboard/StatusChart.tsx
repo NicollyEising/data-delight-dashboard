@@ -1,11 +1,15 @@
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { getTasksByStatus } from '@/data/tasks';
+import { Task, getTasksByStatus } from '@/data/tasks';
 
 const COLORS = ['hsl(215, 70%, 45%)', 'hsl(160, 60%, 45%)'];
 
-export function StatusChart() {
-  const { ativas, concluidas } = getTasksByStatus();
+interface StatusChartProps {
+  tasks: Task[];
+}
+
+export function StatusChart({ tasks }: StatusChartProps) {
+  const { ativas, concluidas } = getTasksByStatus(tasks);
   const data = [
     { name: 'Ativas', value: ativas },
     { name: 'Concluídas', value: concluidas },

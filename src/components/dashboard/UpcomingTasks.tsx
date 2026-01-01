@@ -1,25 +1,35 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { getUpcomingTasks } from '@/data/tasks';
+import { Task, getUpcomingTasks, getPrioridadeLabel } from '@/data/tasks';
 import { Calendar, AlertCircle } from 'lucide-react';
 
-const priorityColors = {
+const priorityColors: Record<string, string> = {
   Urgente: 'bg-destructive text-destructive-foreground',
   Alta: 'bg-warning text-warning-foreground',
   Média: 'bg-primary text-primary-foreground',
   Baixa: 'bg-success text-success-foreground',
+  'Não definida': 'bg-muted text-muted-foreground',
 };
 
-export function UpcomingTasks() {
-  const tasks = getUpcomingTasks();
+interface UpcomingTasksProps {
+  tasks: Task[];
+}
+
+export function UpcomingTasks({ tasks }: UpcomingTasksProps) {
+  const upcomingTasks = getUpcomingTasks(tasks);
 
   const formatDate = (dateStr: string) => {
-    const date = new Date(dateStr);
+    if (!dateStr) return '-';
+    const [day, month, year] = dateStr.split('/');
+    const date = new Date(Number(year), Number(month) - 1, Number(day));
     return date.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' });
   };
 
   const isOverdue = (dateStr: string) => {
-    return new Date(dateStr) < new Date();
+    if (!dateStr) return false;
+    const [day, month, year] = dateStr.split('/');
+    const taskDate = new Date(Number(year), Number(month) - 1, Number(day));
+    return taskDate < new Date();
   };
 
   return (
@@ -32,30 +42,33 @@ export function UpcomingTasks() {
       </CardHeader>
       <CardContent>
         <div className="space-y-3">
-          {tasks.map((task) => (
-            <div 
-              key={task.id} 
-              className="flex items-center justify-between p-3 bg-secondary/50 rounded-lg border border-border/50"
-            >
-              <div className="flex-1 min-w-0">
-                <p className="font-medium text-sm truncate">{task.titulo}</p>
-                <div className="flex items-center gap-2 mt-1">
-                  <span className="text-xs text-muted-foreground">{task.etapa}</span>
-                  <span className="text-xs text-muted-foreground">•</span>
-                  <span className="text-xs text-muted-foreground">{task.esforco}h</span>
+          {upcomingTasks.map((task) => {
+            const prioridadeLabel = getPrioridadeLabel(task.prioridade);
+            return (
+              <div 
+                key={task.id} 
+                className="flex items-center justify-between p-3 bg-secondary/50 rounded-lg border border-border/50"
+              >
+                <div className="flex-1 min-w-0">
+                  <p className="font-medium text-sm truncate">{task.tarefa}</p>
+                  <div className="flex items-center gap-2 mt-1">
+                    <span className="text-xs text-muted-foreground">{task.etapa}</span>
+                    <span className="text-xs text-muted-foreground">•</span>
+                    <span className="text-xs text-muted-foreground">{task.esforco}h</span>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2 ml-2">
+                  <Badge className={priorityColors[prioridadeLabel]} variant="secondary">
+                    {prioridadeLabel}
+                  </Badge>
+                  <div className={`flex items-center gap-1 text-xs ${isOverdue(task.concluirTarefaAte) ? 'text-destructive' : 'text-muted-foreground'}`}>
+                    {isOverdue(task.concluirTarefaAte) && <AlertCircle className="h-3 w-3" />}
+                    {formatDate(task.concluirTarefaAte)}
+                  </div>
                 </div>
               </div>
-              <div className="flex items-center gap-2 ml-2">
-                <Badge className={priorityColors[task.prioridade]} variant="secondary">
-                  {task.prioridade}
-                </Badge>
-                <div className={`flex items-center gap-1 text-xs ${isOverdue(task.concluirAte) ? 'text-destructive' : 'text-muted-foreground'}`}>
-                  {isOverdue(task.concluirAte) && <AlertCircle className="h-3 w-3" />}
-                  {formatDate(task.concluirAte)}
-                </div>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </CardContent>
     </Card>

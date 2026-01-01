@@ -1,9 +1,13 @@
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { getTasksByEtapa } from '@/data/tasks';
+import { Task, getTasksByEtapa } from '@/data/tasks';
 
-export function EtapaChart() {
-  const data = getTasksByEtapa();
+interface EtapaChartProps {
+  tasks: Task[];
+}
+
+export function EtapaChart({ tasks }: EtapaChartProps) {
+  const data = getTasksByEtapa(tasks);
 
   return (
     <Card className="shadow-sm">
@@ -18,9 +22,9 @@ export function EtapaChart() {
             <YAxis 
               dataKey="name" 
               type="category" 
-              width={100}
+              width={130}
               stroke="hsl(var(--muted-foreground))"
-              tick={{ fill: 'hsl(var(--foreground))' }}
+              tick={{ fill: 'hsl(var(--foreground))', fontSize: 11 }}
             />
             <Tooltip 
               contentStyle={{ 

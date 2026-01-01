@@ -1,196 +1,118 @@
 export interface Task {
   id: string;
-  titulo: string;
   situacao: 'Ativa' | 'Concluída';
+  tarefa: string;
+  tags: string;
+  workspace: string;
+  criadaPor: string;
+  criadaEm: string;
+  canal: string;
   etapa: string;
-  prioridade: 'Urgente' | 'Alta' | 'Média' | 'Baixa';
-  esforco: number;
-  concluirAte: string;
   executor: string;
+  quantidadePecas: number;
+  quantidadeFormularios: number;
+  iniciarEtapaEm: string;
+  executarEtapaAte: string;
+  concluirTarefaAte: string;
+  esforco: number;
+  ultimaResposta: string;
+  prioridade: string;
+  origem: string;
 }
 
-export const tasks: Task[] = [
-  {
-    id: "1",
-    titulo: "Pauta",
-    situacao: "Ativa",
-    etapa: "Análise",
-    prioridade: "Urgente",
-    esforco: 2,
-    concluirAte: "2025-12-30",
-    executor: "Fernanda Boaventura"
-  },
-  {
-    id: "2",
-    titulo: "E1 - LP - REVISÃO PEÇAS",
-    situacao: "Ativa",
-    etapa: "Análise",
-    prioridade: "Urgente",
-    esforco: 1,
-    concluirAte: "2025-12-30",
-    executor: "Fernanda Boaventura"
-  },
-  {
-    id: "3",
-    titulo: "E1 - MKT - REVISÃO DO MAPA",
-    situacao: "Ativa",
-    etapa: "Análise",
-    prioridade: "Média",
-    esforco: 3,
-    concluirAte: "2025-12-31",
-    executor: "Fernanda Boaventura"
-  },
-  {
-    id: "4",
-    titulo: "E1 - MKT - REVISÃO DO MAPA",
-    situacao: "Ativa",
-    etapa: "Análise",
-    prioridade: "Baixa",
-    esforco: 1,
-    concluirAte: "2025-12-31",
-    executor: "Fernanda Boaventura"
-  },
-  {
-    id: "5",
-    titulo: "Pauta",
-    situacao: "Concluída",
-    etapa: "Análise",
-    prioridade: "Média",
-    esforco: 2,
-    concluirAte: "2025-12-26",
-    executor: "Fernanda Boaventura"
-  },
-  {
-    id: "6",
-    titulo: "Pauta",
-    situacao: "Ativa",
-    etapa: "Análise",
-    prioridade: "Baixa",
-    esforco: 1,
-    concluirAte: "2026-01-06",
-    executor: "Fernanda Boaventura"
-  },
-  {
-    id: "7",
-    titulo: "E1 - LP - BRIEFING DE NOVAS PEÇAS",
-    situacao: "Ativa",
-    etapa: "Briefing",
-    prioridade: "Urgente",
-    esforco: 3,
-    concluirAte: "2025-12-30",
-    executor: "Fernanda Boaventura"
-  },
-  {
-    id: "8",
-    titulo: "E1 - MKT - REVISÃO DE PEÇA",
-    situacao: "Ativa",
-    etapa: "Análise",
-    prioridade: "Média",
-    esforco: 1,
-    concluirAte: "2025-12-30",
-    executor: "Fernanda Boaventura"
-  },
-  {
-    id: "9",
-    titulo: "E1 - MKT - REVISÃO DE PEÇA",
-    situacao: "Ativa",
-    etapa: "Análise",
-    prioridade: "Média",
-    esforco: 1,
-    concluirAte: "2025-12-31",
-    executor: "Fernanda Boaventura"
-  },
-  {
-    id: "10",
-    titulo: "E1 - MKT - REVISÃO DE PEÇA",
-    situacao: "Concluída",
-    etapa: "Briefing",
-    prioridade: "Alta",
-    esforco: 1,
-    concluirAte: "2025-12-26",
-    executor: "Fernanda Boaventura"
-  },
-  {
-    id: "11",
-    titulo: "E1 - MKT - REVISÃO DE PEÇA",
-    situacao: "Ativa",
-    etapa: "Planejamento",
-    prioridade: "Média",
-    esforco: 1,
-    concluirAte: "2026-01-03",
-    executor: "Fernanda Boaventura"
-  },
-  {
-    id: "12",
-    titulo: "E1 - MKT - APROVAÇÃO DE PEÇA",
-    situacao: "Ativa",
-    etapa: "Planejamento",
-    prioridade: "Baixa",
-    esforco: 1,
-    concluirAte: "2026-01-07",
-    executor: "Fernanda Boaventura"
-  },
-  {
-    id: "13",
-    titulo: "E1 - LP - REVISÃO DA LP",
-    situacao: "Ativa",
-    etapa: "Planejamento",
-    prioridade: "Alta",
-    esforco: 2,
-    concluirAte: "2026-01-02",
-    executor: "Fernanda Boaventura"
-  },
-  {
-    id: "14",
-    titulo: "E1 - LP - REVISÃO DA LP",
-    situacao: "Ativa",
-    etapa: "Briefing",
-    prioridade: "Alta",
-    esforco: 4,
-    concluirAte: "2026-01-02",
-    executor: "Fernanda Boaventura"
-  }
-];
+// Parse esforço string (HH:MM) to hours
+const parseEsforco = (esforco: string): number => {
+  if (!esforco) return 0;
+  const [hours, minutes] = esforco.split(':').map(Number);
+  return hours + (minutes || 0) / 60;
+};
+
+// Parse priority string to get category
+const parsePrioridade = (prioridade: string): 'Urgente' | 'Alta' | 'Média' | 'Baixa' | 'Não definida' => {
+  if (!prioridade) return 'Não definida';
+  if (prioridade.includes('Urgente')) return 'Urgente';
+  if (prioridade.includes('Alta')) return 'Alta';
+  if (prioridade.includes('Média')) return 'Média';
+  if (prioridade.includes('Baixa')) return 'Baixa';
+  return 'Não definida';
+};
+
+// Parse CSV to tasks array
+export const parseCSV = (csvText: string): Task[] => {
+  const lines = csvText.trim().split('\n');
+  const headers = lines[0].replace(/^\uFEFF/, '').split(';').map(h => h.replace(/"/g, ''));
+  
+  return lines.slice(1).map(line => {
+    const values = line.split(';').map(v => v.replace(/"/g, ''));
+    return {
+      id: values[0],
+      situacao: values[1] as 'Ativa' | 'Concluída',
+      tarefa: values[2],
+      tags: values[3],
+      workspace: values[4],
+      criadaPor: values[5],
+      criadaEm: values[6],
+      canal: values[7],
+      etapa: values[8],
+      executor: values[9],
+      quantidadePecas: parseInt(values[10]) || 0,
+      quantidadeFormularios: parseInt(values[11]) || 0,
+      iniciarEtapaEm: values[12],
+      executarEtapaAte: values[13],
+      concluirTarefaAte: values[14],
+      esforco: parseEsforco(values[15]),
+      ultimaResposta: values[16],
+      prioridade: values[17],
+      origem: values[18],
+    };
+  });
+};
 
 // Helper functions for dashboard metrics
-export const getTasksByStatus = () => {
+export const getTasksByStatus = (tasks: Task[]) => {
   const ativas = tasks.filter(t => t.situacao === 'Ativa').length;
   const concluidas = tasks.filter(t => t.situacao === 'Concluída').length;
   return { ativas, concluidas };
 };
 
-export const getTasksByPriority = () => {
-  const priorities = ['Urgente', 'Alta', 'Média', 'Baixa'] as const;
+export const getTasksByPriority = (tasks: Task[]) => {
+  const priorities = ['Urgente', 'Alta', 'Média', 'Baixa', 'Não definida'] as const;
   return priorities.map(p => ({
     name: p,
-    value: tasks.filter(t => t.prioridade === p).length
-  }));
+    value: tasks.filter(t => parsePrioridade(t.prioridade) === p).length
+  })).filter(p => p.value > 0);
 };
 
-export const getTasksByEtapa = () => {
-  const etapas = ['Análise', 'Briefing', 'Planejamento'] as const;
-  return etapas.map(e => ({
+export const getTasksByEtapa = (tasks: Task[]) => {
+  const etapasSet = new Set(tasks.map(t => t.etapa));
+  return Array.from(etapasSet).map(e => ({
     name: e,
     value: tasks.filter(t => t.etapa === e).length
   }));
 };
 
-export const getTotalEffort = () => {
-  return tasks.reduce((sum, t) => sum + t.esforco, 0);
+export const getTotalEffort = (tasks: Task[]) => {
+  return Math.round(tasks.reduce((sum, t) => sum + t.esforco, 0));
 };
 
-export const getUpcomingTasks = () => {
+export const getUpcomingTasks = (tasks: Task[]) => {
   return tasks
     .filter(t => t.situacao === 'Ativa')
-    .sort((a, b) => new Date(a.concluirAte).getTime() - new Date(b.concluirAte).getTime())
+    .sort((a, b) => {
+      const dateA = a.concluirTarefaAte.split('/').reverse().join('-');
+      const dateB = b.concluirTarefaAte.split('/').reverse().join('-');
+      return new Date(dateA).getTime() - new Date(dateB).getTime();
+    })
     .slice(0, 5);
 };
 
-export const getEffortByTask = () => {
+export const getEffortByTask = (tasks: Task[]) => {
   return tasks
     .slice(0, 8)
     .map(t => ({
-      name: t.titulo.length > 20 ? t.titulo.substring(0, 20) + '...' : t.titulo,
+      name: t.tarefa.length > 25 ? t.tarefa.substring(0, 25) + '...' : t.tarefa,
       esforco: t.esforco
     }));
 };
+
+export const getPrioridadeLabel = parsePrioridade;
