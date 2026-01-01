@@ -1,9 +1,13 @@
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { getEffortByTask } from '@/data/tasks';
+import { Task, getEffortByTask } from '@/data/tasks';
 
-export function EffortChart() {
-  const data = getEffortByTask();
+interface EffortChartProps {
+  tasks: Task[];
+}
+
+export function EffortChart({ tasks }: EffortChartProps) {
+  const data = getEffortByTask(tasks);
 
   return (
     <Card className="shadow-sm">
@@ -18,9 +22,9 @@ export function EffortChart() {
             <YAxis 
               dataKey="name" 
               type="category" 
-              width={150}
+              width={180}
               stroke="hsl(var(--muted-foreground))"
-              tick={{ fill: 'hsl(var(--foreground))', fontSize: 11 }}
+              tick={{ fill: 'hsl(var(--foreground))', fontSize: 10 }}
             />
             <Tooltip 
               contentStyle={{ 
