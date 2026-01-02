@@ -7,6 +7,11 @@ import { ExecutorChart } from '@/components/dashboard/ExecutorChart';
 import { CanalChart } from '@/components/dashboard/CanalChart';
 import { CompletionGauge } from '@/components/dashboard/CompletionGauge';
 import { StatsOverview } from '@/components/dashboard/StatsOverview';
+import { OrigemChart } from '@/components/dashboard/OrigemChart';
+import { CriadorChart } from '@/components/dashboard/CriadorChart';
+import { PecasFormulariosChart } from '@/components/dashboard/PecasFormulariosChart';
+import { TimelineChart } from '@/components/dashboard/TimelineChart';
+import { SummaryStats } from '@/components/dashboard/SummaryStats';
 import { useTasks } from '@/hooks/useTasks';
 import { Skeleton } from '@/components/ui/skeleton';
 import { BarChart3 } from 'lucide-react';
@@ -92,8 +97,21 @@ const Index = () => {
           <CanalChart tasks={tasks} />
         </section>
 
-        {/* Upcoming Tasks */}
-        <section className="mb-8">
+        {/* Row 4: Origem + Criador */}
+        <section className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          <OrigemChart tasks={tasks} />
+          <CriadorChart tasks={tasks} />
+        </section>
+
+        {/* Row 5: Timeline + Peças/Formulários */}
+        <section className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          <TimelineChart tasks={tasks} />
+          <PecasFormulariosChart tasks={tasks} />
+        </section>
+
+        {/* Row 6: Summary Stats + Upcoming Tasks */}
+        <section className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          <SummaryStats tasks={tasks} />
           <UpcomingTasks tasks={tasks} />
         </section>
 

@@ -137,6 +137,64 @@ export const getTasksByCanal = (tasks: Task[]) => {
     .sort((a, b) => b.value - a.value);
 };
 
+export const getTasksByOrigem = (tasks: Task[]) => {
+  const origemMap = new Map<string, number>();
+  tasks.forEach(t => {
+    const origem = t.origem || 'Não definida';
+    origemMap.set(origem, (origemMap.get(origem) || 0) + 1);
+  });
+  return Array.from(origemMap.entries())
+    .map(([name, value]) => ({ name, value }))
+    .sort((a, b) => b.value - a.value);
+};
+
+export const getTasksByCriador = (tasks: Task[]) => {
+  const criadorMap = new Map<string, number>();
+  tasks.forEach(t => {
+    const criador = t.criadaPor || 'Não definido';
+    criadorMap.set(criador, (criadorMap.get(criador) || 0) + 1);
+  });
+  return Array.from(criadorMap.entries())
+    .map(([name, value]) => ({ name, value }))
+    .sort((a, b) => b.value - a.value);
+};
+
+export const getPecasFormulariosData = (tasks: Task[]) => {
+  return tasks.map(t => ({
+    name: t.tarefa.length > 20 ? t.tarefa.substring(0, 20) + '...' : t.tarefa,
+    pecas: t.quantidadePecas,
+    formularios: t.quantidadeFormularios,
+  })).filter(t => t.pecas > 0 || t.formularios > 0);
+};
+
+export const getTotalPecas = (tasks: Task[]) => {
+  return tasks.reduce((sum, t) => sum + t.quantidadePecas, 0);
+};
+
+export const getTotalFormularios = (tasks: Task[]) => {
+  return tasks.reduce((sum, t) => sum + t.quantidadeFormularios, 0);
+};
+
+export const getTasksByMonth = (tasks: Task[]) => {
+  const monthMap = new Map<string, number>();
+  tasks.forEach(t => {
+    if (t.criadaEm) {
+      const parts = t.criadaEm.split('/');
+      if (parts.length >= 2) {
+        const monthYear = `${parts[1]}/${parts[2]}`;
+        monthMap.set(monthYear, (monthMap.get(monthYear) || 0) + 1);
+      }
+    }
+  });
+  return Array.from(monthMap.entries())
+    .map(([name, value]) => ({ name, value }))
+    .sort((a, b) => {
+      const [mA, yA] = a.name.split('/').map(Number);
+      const [mB, yB] = b.name.split('/').map(Number);
+      return (yA * 12 + mA) - (yB * 12 + mB);
+    });
+};
+
 export const getCompletionRate = (tasks: Task[]) => {
   const total = tasks.length;
   const completed = tasks.filter(t => t.situacao === 'Concluída').length;
