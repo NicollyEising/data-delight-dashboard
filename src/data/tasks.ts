@@ -115,4 +115,37 @@ export const getEffortByTask = (tasks: Task[]) => {
     }));
 };
 
+export const getTasksByExecutor = (tasks: Task[]) => {
+  const executorMap = new Map<string, number>();
+  tasks.forEach(t => {
+    const executor = t.executor || 'Não atribuído';
+    executorMap.set(executor, (executorMap.get(executor) || 0) + 1);
+  });
+  return Array.from(executorMap.entries())
+    .map(([name, value]) => ({ name, value }))
+    .sort((a, b) => b.value - a.value);
+};
+
+export const getTasksByCanal = (tasks: Task[]) => {
+  const canalMap = new Map<string, number>();
+  tasks.forEach(t => {
+    const canal = t.canal || 'Não definido';
+    canalMap.set(canal, (canalMap.get(canal) || 0) + 1);
+  });
+  return Array.from(canalMap.entries())
+    .map(([name, value]) => ({ name, value }))
+    .sort((a, b) => b.value - a.value);
+};
+
+export const getCompletionRate = (tasks: Task[]) => {
+  const total = tasks.length;
+  const completed = tasks.filter(t => t.situacao === 'Concluída').length;
+  return total > 0 ? Math.round((completed / total) * 100) : 0;
+};
+
+export const getAverageEffort = (tasks: Task[]) => {
+  const total = tasks.reduce((sum, t) => sum + t.esforco, 0);
+  return tasks.length > 0 ? Math.round((total / tasks.length) * 10) / 10 : 0;
+};
+
 export const getPrioridadeLabel = parsePrioridade;

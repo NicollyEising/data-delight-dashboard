@@ -1,34 +1,33 @@
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Task, getTasksByEtapa } from '@/data/tasks';
-import { Layers } from 'lucide-react';
+import { Task, getTasksByExecutor } from '@/data/tasks';
+import { Users } from 'lucide-react';
 
 const COLORS = [
   'hsl(215, 70%, 50%)',
-  'hsl(190, 70%, 50%)',
-  'hsl(160, 60%, 50%)',
-  'hsl(280, 60%, 55%)',
-  'hsl(45, 90%, 55%)',
-  'hsl(340, 70%, 55%)',
+  'hsl(215, 70%, 55%)',
+  'hsl(215, 70%, 60%)',
+  'hsl(215, 70%, 65%)',
+  'hsl(215, 70%, 70%)',
 ];
 
-interface EtapaChartProps {
+interface ExecutorChartProps {
   tasks: Task[];
 }
 
-export function EtapaChart({ tasks }: EtapaChartProps) {
-  const data = getTasksByEtapa(tasks);
+export function ExecutorChart({ tasks }: ExecutorChartProps) {
+  const data = getTasksByExecutor(tasks);
 
   return (
     <Card className="shadow-lg border-0 bg-gradient-to-br from-card to-card/80">
       <CardHeader className="pb-2">
         <div className="flex items-center gap-2">
-          <div className="p-2 rounded-lg bg-chart-2/10">
-            <Layers className="h-4 w-4 text-chart-2" />
+          <div className="p-2 rounded-lg bg-primary/10">
+            <Users className="h-4 w-4 text-primary" />
           </div>
           <div>
-            <CardTitle className="text-lg font-semibold">Tarefas por Etapa</CardTitle>
-            <CardDescription>Distribuição no fluxo de trabalho</CardDescription>
+            <CardTitle className="text-lg font-semibold">Tarefas por Executor</CardTitle>
+            <CardDescription>Distribuição de carga de trabalho</CardDescription>
           </div>
         </div>
       </CardHeader>
@@ -43,8 +42,6 @@ export function EtapaChart({ tasks }: EtapaChartProps) {
               width={120}
               stroke="hsl(var(--muted-foreground))"
               tick={{ fill: 'hsl(var(--foreground))', fontSize: 11 }}
-              tickLine={false}
-              axisLine={false}
             />
             <Tooltip 
               contentStyle={{ 

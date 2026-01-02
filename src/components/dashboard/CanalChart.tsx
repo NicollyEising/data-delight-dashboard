@@ -1,20 +1,23 @@
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Task, getTasksByStatus } from '@/data/tasks';
-import { Activity } from 'lucide-react';
+import { Task, getTasksByCanal } from '@/data/tasks';
+import { Radio } from 'lucide-react';
 
-const COLORS = ['hsl(215, 70%, 50%)', 'hsl(160, 60%, 50%)'];
+const COLORS = [
+  'hsl(215, 70%, 50%)',
+  'hsl(160, 60%, 50%)',
+  'hsl(280, 60%, 55%)',
+  'hsl(45, 90%, 55%)',
+  'hsl(340, 70%, 55%)',
+  'hsl(190, 70%, 50%)',
+];
 
-interface StatusChartProps {
+interface CanalChartProps {
   tasks: Task[];
 }
 
-export function StatusChart({ tasks }: StatusChartProps) {
-  const { ativas, concluidas } = getTasksByStatus(tasks);
-  const data = [
-    { name: 'Ativas', value: ativas },
-    { name: 'Concluídas', value: concluidas },
-  ];
+export function CanalChart({ tasks }: CanalChartProps) {
+  const data = getTasksByCanal(tasks);
 
   const renderCustomLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent }: any) => {
     const RADIAN = Math.PI / 180;
@@ -22,31 +25,31 @@ export function StatusChart({ tasks }: StatusChartProps) {
     const x = cx + radius * Math.cos(-midAngle * RADIAN);
     const y = cy + radius * Math.sin(-midAngle * RADIAN);
 
-    return (
+    return percent > 0.05 ? (
       <text 
         x={x} 
         y={y} 
         fill="white" 
         textAnchor="middle" 
         dominantBaseline="central"
-        fontSize={14}
+        fontSize={12}
         fontWeight={600}
       >
         {`${(percent * 100).toFixed(0)}%`}
       </text>
-    );
+    ) : null;
   };
 
   return (
     <Card className="shadow-lg border-0 bg-gradient-to-br from-card to-card/80">
       <CardHeader className="pb-2">
         <div className="flex items-center gap-2">
-          <div className="p-2 rounded-lg bg-primary/10">
-            <Activity className="h-4 w-4 text-primary" />
+          <div className="p-2 rounded-lg bg-chart-5/10">
+            <Radio className="h-4 w-4 text-chart-5" />
           </div>
           <div>
-            <CardTitle className="text-lg font-semibold">Status das Tarefas</CardTitle>
-            <CardDescription>Ativas vs Concluídas</CardDescription>
+            <CardTitle className="text-lg font-semibold">Tarefas por Canal</CardTitle>
+            <CardDescription>Origem das demandas</CardDescription>
           </div>
         </div>
       </CardHeader>
@@ -57,12 +60,12 @@ export function StatusChart({ tasks }: StatusChartProps) {
               data={data}
               cx="50%"
               cy="50%"
-              innerRadius={60}
+              innerRadius={55}
               outerRadius={95}
-              paddingAngle={4}
+              paddingAngle={3}
               dataKey="value"
-              label={renderCustomLabel}
               labelLine={false}
+              label={renderCustomLabel}
             >
               {data.map((_, index) => (
                 <Cell 
