@@ -112,21 +112,6 @@ O dashboard lê dados de um arquivo CSV com as seguintes colunas:
 | `Prioridade` | Nível de prioridade |
 | `Origem` | Origem da demanda |
 
-## 🎨 Customização
-
-### Cores
-As cores podem ser customizadas no arquivo `src/index.css`:
-
-```css
-:root {
-  --chart-1: 220 70% 50%;  /* Azul */
-  --chart-2: 160 60% 45%;  /* Verde */
-  --chart-3: 30 80% 55%;   /* Laranja */
-  --chart-4: 280 65% 60%;  /* Roxo */
-  --chart-5: 340 75% 55%;  /* Rosa */
-}
-```
-
 ### Dados
 Substitua o arquivo `public/data/tarefas.csv` com seus próprios dados mantendo o formato especificado.
 
@@ -136,14 +121,6 @@ O dashboard é totalmente responsivo e se adapta a diferentes tamanhos de tela:
 - **Desktop** - Layout em grid com múltiplas colunas
 - **Tablet** - Grid adaptativo
 - **Mobile** - Layout em coluna única
-
-## 🤝 Contribuição
-
-1. Faça um fork do projeto
-2. Crie uma branch para sua feature (`git checkout -b feature/nova-feature`)
-3. Commit suas mudanças (`git commit -m 'Adiciona nova feature'`)
-4. Push para a branch (`git push origin feature/nova-feature`)
-5. Abra um Pull Request
 
 ## 📄 Licença
 
