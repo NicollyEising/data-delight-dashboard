@@ -1,17 +1,15 @@
 import { StatusChart } from '@/components/dashboard/StatusChart';
 import { PriorityChart } from '@/components/dashboard/PriorityChart';
 import { EtapaChart } from '@/components/dashboard/EtapaChart';
-import { EffortChart } from '@/components/dashboard/EffortChart';
 import { UpcomingTasks } from '@/components/dashboard/UpcomingTasks';
-import { ExecutorChart } from '@/components/dashboard/ExecutorChart';
-import { CanalChart } from '@/components/dashboard/CanalChart';
 import { CompletionGauge } from '@/components/dashboard/CompletionGauge';
-import { StatsOverview } from '@/components/dashboard/StatsOverview';
-import { OrigemChart } from '@/components/dashboard/OrigemChart';
-import { CriadorChart } from '@/components/dashboard/CriadorChart';
 import { PecasFormulariosChart } from '@/components/dashboard/PecasFormulariosChart';
-import { TimelineChart } from '@/components/dashboard/TimelineChart';
-import { SummaryStats } from '@/components/dashboard/SummaryStats';
+import { KPICards } from '@/components/dashboard/KPICards';
+import { EtapaDonutChart } from '@/components/dashboard/EtapaDonutChart';
+import { Top5EffortChart } from '@/components/dashboard/Top5EffortChart';
+import { EffortTimelineChart } from '@/components/dashboard/EffortTimelineChart';
+import { GanttChart } from '@/components/dashboard/GanttChart';
+import { RiskAnalysisCard } from '@/components/dashboard/RiskAnalysisCard';
 import { useTasks } from '@/hooks/useTasks';
 import { Skeleton } from '@/components/ui/skeleton';
 import { BarChart3 } from 'lucide-react';
@@ -73,9 +71,9 @@ const Index = () => {
 
       {/* Main Content */}
       <main className="container mx-auto max-w-7xl px-4 py-8">
-        {/* Stats Overview */}
+        {/* KPI Cards with Priority Distribution */}
         <section className="mb-8">
-          <StatsOverview tasks={tasks} />
+          <KPICards tasks={tasks} />
         </section>
 
         {/* Row 1: Gauge + Status + Priority */}
@@ -85,34 +83,32 @@ const Index = () => {
           <PriorityChart tasks={tasks} />
         </section>
 
-        {/* Row 2: Etapa + Effort */}
+        {/* Row 2: Etapa Donut + Top 5 Effort */}
+        <section className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          <EtapaDonutChart tasks={tasks} />
+          <Top5EffortChart tasks={tasks} />
+        </section>
+
+        {/* Row 3: Etapa Bars + Effort Timeline */}
         <section className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
           <EtapaChart tasks={tasks} />
-          <EffortChart tasks={tasks} />
+          <EffortTimelineChart tasks={tasks} />
         </section>
 
-        {/* Row 3: Executor + Canal */}
-        <section className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-          <ExecutorChart tasks={tasks} />
-          <CanalChart tasks={tasks} />
+        {/* Row 4: Gantt Chart (full width) */}
+        <section className="mb-8">
+          <GanttChart tasks={tasks} />
         </section>
 
-        {/* Row 4: Origem + Criador */}
+        {/* Row 5: Risk Analysis + Upcoming Tasks */}
         <section className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-          <OrigemChart tasks={tasks} />
-          <CriadorChart tasks={tasks} />
-        </section>
-
-        {/* Row 5: Timeline + Peças/Formulários */}
-        <section className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-          <TimelineChart tasks={tasks} />
-          <PecasFormulariosChart tasks={tasks} />
-        </section>
-
-        {/* Row 6: Summary Stats + Upcoming Tasks */}
-        <section className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-          <SummaryStats tasks={tasks} />
+          <RiskAnalysisCard tasks={tasks} />
           <UpcomingTasks tasks={tasks} />
+        </section>
+
+        {/* Row 6: Peças/Formulários */}
+        <section className="mb-8">
+          <PecasFormulariosChart tasks={tasks} />
         </section>
 
         {/* Footer */}
