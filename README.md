@@ -1,4 +1,4 @@
-# 📊 Dashboard de Gestão de Tarefas
+# Dashboard de Gestão de Tarefas
 
 Um dashboard analítico moderno e responsivo para visualização e gestão de tarefas, desenvolvido com React, TypeScript e Tailwind CSS.
 
@@ -46,10 +46,10 @@ Um dashboard analítico moderno e responsivo para visualização e gestão de ta
 
 ```bash
 # Clone o repositório
-git clone https://github.com/seu-usuario/dashboard-tarefas.git
+git clone https://github.com/NicollyEising/data-delight-dashboard.git
 
 # Entre no diretório
-cd dashboard-tarefas
+cd data-delight-dashboard
 
 # Instale as dependências
 npm install
@@ -148,7 +148,3 @@ O dashboard é totalmente responsivo e se adapta a diferentes tamanhos de tela:
 ## 📄 Licença
 
 Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
-
----
-
-Desenvolvido com ❤️ usando [Lovable](https://lovable.dev)
