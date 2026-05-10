@@ -1,6 +1,8 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { Task, getTotalEffort, getAverageEffort, getCompletionRate, getTasksByStatus, getPriorityDistribution } from '@/data/tasks';
-import { CheckCircle, Clock, Target, AlertTriangle, TrendingUp, Activity } from 'lucide-react';
+import { CheckCircle, Clock, Target, AlertTriangle, Activity, UserX, DollarSign } from 'lucide-react';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { formatBRL } from '@/lib/ekyteParser';
 
 interface KPICardsProps {
   tasks: Task[];
@@ -12,7 +14,10 @@ export function KPICards({ tasks }: KPICardsProps) {
   const averageEffort = getAverageEffort(tasks);
   const { ativas, concluidas } = getTasksByStatus(tasks);
   const priorityDist = getPriorityDistribution(tasks);
-  
+  const atrasadas = tasks.filter(t => t.atrasada).length;
+  const semResp = tasks.filter(t => t.semResponsavel).length;
+  const saldo = tasks.reduce((s, t) => s + (t.valorRealizado - t.orcamento), 0);
+
   const kpis = [
     {
       title: 'Taxa de Conclusão',
@@ -21,14 +26,16 @@ export function KPICards({ tasks }: KPICardsProps) {
       icon: CheckCircle,
       color: 'text-success',
       bgColor: 'bg-success/10',
+      tip: 'Tarefas com Situação = Concluída ÷ total filtrado',
     },
     {
       title: 'Esforço Total',
       value: `${totalEffort}h`,
-      subtitle: 'Horas estimadas',
+      subtitle: 'Horas realizadas',
       icon: Clock,
       color: 'text-info',
       bgColor: 'bg-info/10',
+      tip: 'Soma de Esforço Realizado (HH:MM) das tarefas filtradas',
     },
     {
       title: 'Esforço Médio',
@@ -37,6 +44,7 @@ export function KPICards({ tasks }: KPICardsProps) {
       icon: Target,
       color: 'text-primary',
       bgColor: 'bg-primary/10',
+      tip: 'Esforço Total ÷ número de tarefas filtradas',
     },
     {
       title: 'Tarefas Ativas',
@@ -45,20 +53,50 @@ export function KPICards({ tasks }: KPICardsProps) {
       icon: Activity,
       color: 'text-warning',
       bgColor: 'bg-warning/10',
+      tip: 'Tarefas com Situação = Ativa',
+    },
+    {
+      title: 'Atrasadas',
+      value: atrasadas.toString(),
+      subtitle: 'Concluir até < hoje',
+      icon: AlertTriangle,
+      color: 'text-destructive',
+      bgColor: 'bg-destructive/10',
+      tip: 'Tarefas Ativas cujo prazo "Concluir tarefa até" já passou',
+    },
+    {
+      title: 'Sem responsável',
+      value: semResp.toString(),
+      subtitle: 'Precisam de atribuição',
+      icon: UserX,
+      color: 'text-warning',
+      bgColor: 'bg-warning/10',
+      tip: 'Tarefas com campo Responsável vazio',
+    },
+    {
+      title: 'Saldo financeiro',
+      value: formatBRL(saldo),
+      subtitle: saldo >= 0 ? 'Positivo' : 'Negativo',
+      icon: DollarSign,
+      color: saldo >= 0 ? 'text-success' : 'text-destructive',
+      bgColor: saldo >= 0 ? 'bg-success/10' : 'bg-destructive/10',
+      tip: 'Soma de (Valor realizado − Orçamento) em todas as tarefas filtradas',
     },
   ];
 
   return (
     <div className="space-y-6">
       {/* Main KPIs */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7 gap-4">
         {kpis.map((kpi) => (
-          <Card key={kpi.title} className="border-border/50 shadow-sm hover:shadow-md transition-shadow">
+          <Tooltip key={kpi.title}>
+            <TooltipTrigger asChild>
+              <Card className="border-border/50 shadow-sm hover:shadow-md transition-shadow cursor-help">
             <CardContent className="p-5">
               <div className="flex items-start justify-between">
                 <div className="space-y-2">
                   <p className="text-sm font-medium text-muted-foreground">{kpi.title}</p>
-                  <p className="text-3xl font-bold text-foreground">{kpi.value}</p>
+                      <p className="text-2xl font-bold text-foreground break-words">{kpi.value}</p>
                   <p className="text-xs text-muted-foreground">{kpi.subtitle}</p>
                 </div>
                 <div className={`p-2.5 rounded-xl ${kpi.bgColor}`}>
@@ -67,6 +105,9 @@ export function KPICards({ tasks }: KPICardsProps) {
               </div>
             </CardContent>
           </Card>
+            </TooltipTrigger>
+            <TooltipContent side="bottom" className="max-w-xs">{kpi.tip}</TooltipContent>
+          </Tooltip>
         ))}
       </div>
 
