@@ -9,7 +9,7 @@ export function useTasks() {
   useEffect(() => {
     const loadTasks = async () => {
       try {
-        const response = await fetch('/data/tarefas.csv');
+        const response = await fetch('/data/tarefa.csv');
         if (!response.ok) throw new Error('Falha ao carregar dados');
         const csvText = await response.text();
         const parsedTasks = parseCSV(csvText);

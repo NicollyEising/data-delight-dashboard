@@ -1,69 +1,102 @@
+import { parseEkyteCSV, parseEkyteDuration, parseEkyteDate, parseEkyteMoney, parsePeople } from '@/lib/ekyteParser';
+
 export interface Task {
   id: string;
-  situacao: 'Ativa' | 'Concluída';
+  situacao: 'Ativa' | 'Concluída' | 'Cancelada' | 'Pausada' | string;
   tarefa: string;
   tags: string;
   workspace: string;
   criadaPor: string;
   criadaEm: string;
   canal: string;
+  fluxoTrabalho: string;
   etapa: string;
+  responsavel: string[];
   executor: string;
   quantidadePecas: number;
   quantidadeFormularios: number;
   iniciarEtapaEm: string;
   executarEtapaAte: string;
   concluirTarefaAte: string;
-  esforco: number;
+  restamMin: number;
   ultimaResposta: string;
   prioridade: string;
+  esforco: number; // hours (esforço realizado)
+  esforcoRealizadoMin: number;
   origem: string;
+  // financial (optional in some CSV exports — default 0)
+  orcamento: number;
+  valorPrevisto: number;
+  valorRealizado: number;
+  // derived
+  atrasada: boolean;
+  urgente: boolean;
+  semResponsavel: boolean;
+  tipoOrigem: 'Projeto' | 'Ticket' | 'Sem origem';
 }
-
-// Parse esforço string (HH:MM) to hours
-const parseEsforco = (esforco: string): number => {
-  if (!esforco) return 0;
-  const [hours, minutes] = esforco.split(':').map(Number);
-  return hours + (minutes || 0) / 60;
-};
 
 // Parse priority string to get category
 const parsePrioridade = (prioridade: string): 'Urgente' | 'Alta' | 'Média' | 'Baixa' | 'Não definida' => {
   if (!prioridade) return 'Não definida';
-  if (prioridade.includes('Urgente')) return 'Urgente';
-  if (prioridade.includes('Alta')) return 'Alta';
-  if (prioridade.includes('Média')) return 'Média';
-  if (prioridade.includes('Baixa')) return 'Baixa';
+  const p = prioridade.toLowerCase();
+  if (p.includes('urgente')) return 'Urgente';
+  if (p.includes('alta')) return 'Alta';
+  if (p.includes('média') || p.includes('media')) return 'Média';
+  if (p.includes('baixa')) return 'Baixa';
   return 'Não definida';
 };
 
-// Parse CSV to tasks array
+// Parse CSV to tasks array (header-based, tolerates new/missing columns).
 export const parseCSV = (csvText: string): Task[] => {
-  const lines = csvText.trim().split('\n');
-  const headers = lines[0].replace(/^\uFEFF/, '').split(';').map(h => h.replace(/"/g, ''));
-  
-  return lines.slice(1).map(line => {
-    const values = line.split(';').map(v => v.replace(/"/g, ''));
+  const rows = parseEkyteCSV(csvText);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  return rows.map(r => {
+    const responsavel = parsePeople(r['Responsável']);
+    const restamMin = parseEkyteDuration(r['Restam']);
+    const esforcoRealizadoMin = parseEkyteDuration(r['Esforço Realizado'] || r['Esforço']);
+    const concluirDate = parseEkyteDate(r['Concluir tarefa até']);
+    const situacao = r['Situação'] || '';
+    const prioridade = r['Prioridade'] || '';
+    const origem = r['Origem'] || '';
+
+    let tipoOrigem: 'Projeto' | 'Ticket' | 'Sem origem' = 'Sem origem';
+    const lowerOrigem = origem.toLowerCase();
+    if (lowerOrigem.startsWith('projeto')) tipoOrigem = 'Projeto';
+    else if (lowerOrigem.startsWith('ticket')) tipoOrigem = 'Ticket';
+
     return {
-      id: values[0],
-      situacao: values[1] as 'Ativa' | 'Concluída',
-      tarefa: values[2],
-      tags: values[3],
-      workspace: values[4],
-      criadaPor: values[5],
-      criadaEm: values[6],
-      canal: values[7],
-      etapa: values[8],
-      executor: values[9],
-      quantidadePecas: parseInt(values[10]) || 0,
-      quantidadeFormularios: parseInt(values[11]) || 0,
-      iniciarEtapaEm: values[12],
-      executarEtapaAte: values[13],
-      concluirTarefaAte: values[14],
-      esforco: parseEsforco(values[15]),
-      ultimaResposta: values[16],
-      prioridade: values[17],
-      origem: values[18],
+      id: r['Id'] || '',
+      situacao,
+      tarefa: r['Tarefa'] || '',
+      tags: r['Tags'] || '',
+      workspace: r['Workspace'] || '',
+      criadaPor: r['Criada por'] || '',
+      criadaEm: r['Criada em'] || '',
+      canal: r['Canal'] || '',
+      fluxoTrabalho: r['Fluxo de trabalho'] || '',
+      etapa: r['Etapa'] || '',
+      responsavel,
+      executor: r['Executor'] || '',
+      quantidadePecas: parseInt(r['Quantidade de peças']) || 0,
+      quantidadeFormularios: parseInt(r['Quantidade de formulários']) || 0,
+      iniciarEtapaEm: r['Iniciar etapa em'] || '',
+      executarEtapaAte: r['Executar etapa até'] || '',
+      concluirTarefaAte: r['Concluir tarefa até'] || '',
+      restamMin,
+      ultimaResposta: r['Última resposta'] || '',
+      prioridade,
+      esforco: Math.round((esforcoRealizadoMin / 60) * 100) / 100,
+      esforcoRealizadoMin,
+      origem,
+      orcamento: parseEkyteMoney(r['Orçamento']),
+      valorPrevisto: parseEkyteMoney(r['Valor previsto']),
+      valorRealizado: parseEkyteMoney(r['Valor realizado']),
+      atrasada: !!(concluirDate && concluirDate < today && situacao === 'Ativa'),
+      urgente: prioridade.toLowerCase().includes('urgente'),
+      semResponsavel: responsavel.length === 0,
+      tipoOrigem,
     };
   });
 };
